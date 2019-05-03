@@ -1,6 +1,6 @@
 {
   "jwtPrivateKey": "unsecureKey",
-  "db": "mongodb://localhost/ecosuite",
+  "db": "mongodb+srv://comp4900:somekindofthermostat@hsh-dev-kdiqq.mongodb.net/test?retryWrites=true",
   "port": "3900",
   "requiresAuth": false
 }

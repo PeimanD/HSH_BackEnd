@@ -7,10 +7,14 @@ const router = express.Router();
 
 router.get("/me", auth, async (req, res) => {
   //retrun user without password
-  console.log("kicked\n");
-  const user = await User.findById(req.user._id).select("-password");
-  console.log(user);
-  res.send(user);
+  try {
+    // const user = await User.findById("5cc368801c9d44000024299f");
+    const user = await User.findOne({ _id: "5ccbf75c1c9d440000c726b8" });
+    console.log("user: ", user);
+    res.send(user);
+  } catch (e) {
+    console.error(e);
+  }
 });
 
 router.post("/", async (req, res) => {
