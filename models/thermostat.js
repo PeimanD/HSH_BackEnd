@@ -1,84 +1,102 @@
-const Joi = require('joi');
-//const mongoose = require('mongoose');
-const {model, Schema} = require('mongoose');
+const Joi = require("joi");
+const { model, Schema } = require("mongoose");
 
-const daySchedule = new Schema({
-  array: [],
-  ofBoolean: [Boolean]
-});
-const weekSchedule = new Schema({
-    monday:{
-      type: daySchedule,
-    },
-    tuesday:{
-      type: daySchedule,
-    },
-    wednesday:{
-      type: daySchedule,
-    },
-    thursday:{
-      type: daySchedule,
-    },
-    friday:{
-      type: daySchedule,
-    },
-    saturday:{
-      type: daySchedule,
-    },
-    sunday:{
-      type: daySchedule,
-    }
-});
-
-const thermostat = model('thermostat', new Schema({
-  userId:{
-    type: Schema.ObjectId,
-    required: true
-  },
-  thermostatId:{
+const thermostatSchema = new Schema({
+  thermostatId: {
     type: String,
     required: true,
     minlength: 5,
     maxlength: 50
   },
-  room:{
+  masterDevId: {
+    type: String,
+    required: true,
+    minlength: 5,
+    maxlength: 50
+  },
+  roomName: {
     type: String,
     required: true,
     lowercase: true,
     minlength: 1,
-    maxlength: 20
+    maxlength: 50
   },
-  status:{
+  status: {
     type: Boolean,
     default: false
   },
-  mode:{
+  mode: {
     type: Number,
     minlength: 1,
     maxlength: 3
   },
-  setTemp:{
+  setTemp: {
     type: Number,
-    required: true
+    required: true,
+    default: 20.0
   },
-  schedule:{
-    type: weekSchedule
-  }
-}));
+  weekSchedule: {
+    mon: [{ type: Number, default: 0.0 }],
+    tue: [{ type: Number, default: 0.0 }],
+    wed: [{ type: Number, default: 0.0 }],
+    thu: [{ type: Number, default: 0.0 }],
+    fri: [{ type: Number, default: 0.0 }],
+    sat: [{ type: Number, default: 0.0 }],
+    sun: [{ type: Number, default: 0.0 }]
+  },
+  authedUsers: [{ type: Schema.Types.ObjectId, ref: "User" }]
+});
+thermostatSchema.index({ thermostatId: 1, masterDevId: 1 }, { unique: true });
+
+const Thermostat = model("Thermostat", thermostatSchema);
+
+const DayLog = model(
+  "DayLog",
+  new Schema({
+    year: {
+      type: Number,
+      min: 1000,
+      max: 9999,
+      default: false
+    },
+    month: {
+      type: Number,
+      min: 1,
+      max: 12,
+      default: false
+    },
+    day: {
+      type: Number,
+      minlength: 1,
+      maxlength: 31,
+      default: false
+    },
+    thermostatId: {
+      type: String,
+      ref: "Thermostat"
+    },
+    dayTemps: [Number],
+    dayAmbientTemps: [Number],
+    is_on: [Boolean],
+    minsOn: [Number],
+    minsSaved: [Number]
+  })
+);
 
 function validateThermostat(thermostat) {
-  const schema = {
-    userId: Joi.string(),
+  const schema = Joi.object().keys({
     thermostatId: Joi.string().required(),
-    room: Joi.string().required(),
+    masterDevId: Joi.string().required(),
+    roomName: Joi.string().required(),
     status: Joi.boolean(),
     mode: Joi.number(),
-    setTemp: Joi.number(),
-    schedule: Joi.weekSchedule()
-  };
+    setTemp: Joi.number()
+    // weekSchedule: Joi.object(Joi.array().items(Joi.number()))
+  });
 
   return Joi.validate(thermostat, schema);
 }
 
-exports.thermostat = thermostat;
-exports.validate = validateThermostat;
+exports.Thermostat = Thermostat;
+exports.DayLog = DayLog;
+exports.validateThermostat = validateThermostat;
