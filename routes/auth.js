@@ -1,24 +1,41 @@
-const Joi = require('joi');
-const bcrypt = require('bcrypt');
-const _ = require('lodash');
-const {User, validate} = require('../models/user');
-const mongoose = require('mongoose');
-const express = require('express');
+const Joi = require("joi");
+const bcrypt = require("bcrypt");
+const config = require("config");
+const _ = require("lodash");
+const { User, validate } = require("../models/user");
+const mongoose = require("mongoose");
+const express = require("express");
 const router = express.Router();
 
-//create user route
-router.post('/', async (req, res) => {
-  const { error } = validate(req.body);
-  if (error) return res.status(400).send(error.details[0].message);
+const jwt = require("jsonwebtoken");
+const passport = require("passport");
+
+// Login
+router.post("/", async (req, res) => {
+  // const { error } = validate(req.body);
+  // if (error) return res.status(400).send(error.details[0].message);
 
   let user = await User.findOne({ email: req.body.email });
-  if (!user) return res.status(400).send('Invalid email or password.');
+  if (!user) return res.status(400).send("Invalid email or password.");
 
   const validPassword = await bcrypt.compare(req.body.password, user.password);
-  if (!validPassword) return res.status(400).send('Invalid email or password.');
+  if (!validPassword) return res.status(400).send("Invalid email or password.");
 
-  const token = user.generateAuthToken();
-  res.send(token);
+  console.log("logged in: ", user);
+  // Finally generate token for use
+  const payload = { id: user._id, email: user.email, userName: user.userName };
+  jwt.sign(
+    payload,
+    config.get("jwtPrivateKey"),
+    { expiresIn: "1h" },
+    (err, token) => {
+      if (err) {
+        res.send(err);
+      } else {
+        res.send(token);
+      }
+    }
+  );
 });
 
 // function validate(req) {
