@@ -1,6 +1,6 @@
 {
   "jwtPrivateKey": "unsecureKey",
-  "db": "mongodb://localhost/ecosuite", // Note: should probably store this as an env variable
+  "db": "mongodb://localhost/ecosuite",
   "port": "3900",
   "requiresAuth": true
 }
