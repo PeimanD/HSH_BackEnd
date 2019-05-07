@@ -1,35 +1,56 @@
-const Joi = require('joi');
-const mongoose = require('mongoose');
-const dayInfo = new Schema({
-  externalTemp: Number,
-  internalTemp: Number,
-  energyUsage: Number,
-  savings: Number,
-  thermostatMode: Number
-});
-const log = mongoose.model('log', new mongoose.Schema({
-  userID:{
-    type: ObjectId,
-    required: true
-  },
-  thermostatId: {
-    type: String
-  },
-  monthInfo: {
-    // *********How to make it an array?*********
-    type: dayInfo
-  }
-}));
+const Joi = require("joi");
+const { model, Schema } = require("mongoose");
+
+const default144Size = new Array(144).fill(0);
+const default144SizeBool = new Array(144).fill(null);
+
+const DayLog = model(
+  "DayLog",
+  new Schema({
+    year: {
+      type: Number,
+      min: 1000,
+      max: 9999,
+      default: false
+    },
+    month: {
+      type: Number,
+      min: 1,
+      max: 12,
+      default: false
+    },
+    day: {
+      type: Number,
+      minlength: 1,
+      maxlength: 31,
+      default: false
+    },
+    thermostatId: {
+      type: String,
+      ref: "Thermostat"
+    },
+    dayTemps: { type: [Number], default: default144Size, required: true },
+    dayAmbientTemps: {
+      type: [Number],
+      default: default144Size,
+      required: true
+    },
+    isOn: { type: [Boolean], default: default144SizeBool, required: true },
+    minsOn: { type: [Number], default: default144Size, required: true },
+    minsSaved: { type: [Number], default: default144Size, required: true }
+  })
+);
 
 function validateLog(log) {
   const schema = {
-    userId: Joi.string().required(),
-    thermostatId: Joi.string().required(),
-    monthInfo: Joi.dayInfo()
+    year: Joi.number().required(),
+    month: Joi.number().required(),
+    day: Joi.number().required(),
+    thermostatId: Joi.string().required()
   };
 
   return Joi.validate(log, schema);
 }
 
-exports.log = log;
+exports.DayLog = DayLog;
 exports.validate = validateLog;

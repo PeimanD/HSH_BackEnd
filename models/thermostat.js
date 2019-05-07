@@ -50,39 +50,6 @@ thermostatSchema.index({ thermostatId: 1, masterDevId: 1 }, { unique: true });
 
 const Thermostat = model("Thermostat", thermostatSchema);
 
-const DayLog = model(
-  "DayLog",
-  new Schema({
-    year: {
-      type: Number,
-      min: 1000,
-      max: 9999,
-      default: false
-    },
-    month: {
-      type: Number,
-      min: 1,
-      max: 12,
-      default: false
-    },
-    day: {
-      type: Number,
-      minlength: 1,
-      maxlength: 31,
-      default: false
-    },
-    thermostatId: {
-      type: String,
-      ref: "Thermostat"
-    },
-    dayTemps: [Number],
-    dayAmbientTemps: [Number],
-    is_on: [Boolean],
-    minsOn: [Number],
-    minsSaved: [Number]
-  })
-);
-
 function validateThermostat(thermostat) {
   const schema = Joi.object().keys({
     thermostatId: Joi.string().required(),
@@ -98,5 +65,4 @@ function validateThermostat(thermostat) {
 }
 
 exports.Thermostat = Thermostat;
-exports.DayLog = DayLog;
 exports.validateThermostat = validateThermostat;

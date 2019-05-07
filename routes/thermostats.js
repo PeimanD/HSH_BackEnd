@@ -4,10 +4,11 @@ const auth = require("../middleware/auth");
 const moment = require("moment");
 const mongoose = require("mongoose");
 const express = require("express");
+const _ = require("lodash");
 const router = express.Router();
 
 //get all thermostats
-router.get("/", [auth] , async (req, res) => {
+router.get("/", [auth], async (req, res) => {
   const thermostats = await Thermostat.find()
     .select("-__v")
     .sort("name");
@@ -40,7 +41,6 @@ router.put("/:id", [auth], async (req, res) => {
   const { error } = validate(req.body);
   if (error) return res.status(400).send(error.details[0].message);
 
-
   const thermostat = await thermostat.findByIdAndUpdate(
     req.params.id,
     // {
@@ -56,7 +56,9 @@ router.put("/:id", [auth], async (req, res) => {
   );
 
   if (!thermostat)
-    return res.status(404).send("The thermostat with the given ID was not found.");
+    return res
+      .status(404)
+      .send("The thermostat with the given ID was not found.");
 
   res.send(thermostat);
 });
@@ -66,7 +68,9 @@ router.delete("/:id", [auth], async (req, res) => {
   const thermostat = await thermostat.findByIdAndRemove(req.params.id);
 
   if (!thermostat)
-    return res.status(404).send("The thermostat with the given ID was not found.");
+    return res
+      .status(404)
+      .send("The thermostat with the given ID was not found.");
 
   res.send(thermostat);
 });
@@ -76,7 +80,9 @@ router.get("/:id", [auth], async (req, res) => {
   const thermostat = await thermostat.findById(req.params.id).select("-__v");
 
   if (!thermostat)
-    return res.status(404).send("The thermostat with the given ID was not found.");
+    return res
+      .status(404)
+      .send("The thermostat with the given ID was not found.");
 
   res.send(thermostat);
 });
