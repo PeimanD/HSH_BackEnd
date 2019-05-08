@@ -1,4 +1,4 @@
-const { Thermostat, validate } = require("../models/thermostat");
+const { Thermostat, validateSchedule } = require("../models/thermostat");
 const auth = require("../middleware/auth");
 //const validateObjectId = require("../middleware/validateObjectId");
 const moment = require("moment");
@@ -7,12 +7,16 @@ const express = require("express");
 const _ = require("lodash");
 const router = express.Router();
 
-//get all thermostats
+/**
+ * Gets all thermostats for the user with provided JWT token
+ */
 router.get("/", [auth], async (req, res) => {
-  const thermostats = await Thermostat.find()
-    .select("-__v")
-    .sort("name");
-  res.send(thermostats);
+  console.log("grabbing ", req.user._id, " thermostats...");
+  const thermostats = await Thermostat.find({
+    authedUsers: req.user._id
+  }).sort("thermostatId");
+  console.log(thermostats);
+  res.send({ thermostats });
 });
 
 //create a thermostat
@@ -36,9 +40,11 @@ router.post("/", [auth], async (req, res) => {
   res.send(thermostat);
 });
 
-//edit a thermostat
-router.put("/:id", [auth], async (req, res) => {
-  const { error } = validate(req.body);
+/**
+ * Update thermostat schedule
+ */
+router.put("/schedule", [auth], async (req, res) => {
+  const { error } = validateSchedule(req.body);
   if (error) return res.status(400).send(error.details[0].message);
 
   const thermostat = await thermostat.findByIdAndUpdate(

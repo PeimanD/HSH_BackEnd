@@ -64,5 +64,13 @@ function validateThermostat(thermostat) {
   return Joi.validate(thermostat, schema);
 }
 
+const validateSchedule = req => {
+  const schema = Joi.object().keys({
+    weekSchedule: Joi.object().required()
+  });
+  return Joi.validate(thermostat, schema);
+};
+
 exports.Thermostat = Thermostat;
 exports.validateThermostat = validateThermostat;
+exports.validateSchedule = validateSchedule;
