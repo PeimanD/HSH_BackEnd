@@ -22,7 +22,7 @@ const User = model(
       type: String,
       required: true,
       minlength: 5,
-      maxlength: 50
+      maxlength: 100
     }
     // isGold: {
     //   type: Boolean,
@@ -46,7 +46,7 @@ const User = model(
 
 function validateUser(user) {
   const schema = {
-    username: Joi.string()
+    userName: Joi.string()
       .min(2)
       .max(50)
       .required(),
@@ -56,15 +56,15 @@ function validateUser(user) {
       .required(),
     password: Joi.string()
       .min(5)
-      .max(50)
-      .required(),
-    isGold: Joi.boolean(),
-    phone: Joi.string()
-      .min(5)
-      .max(50)
-      .required(),
-    age: Joi.number(),
-    favTemp: Joi.number()
+      .max(100)
+      .required()
+    // isGold: Joi.boolean(),
+    // phone: Joi.string()
+    //   .min(5)
+    //   .max(50)
+    //   .required(),
+    // age: Joi.number(),
+    // favTemp: Joi.number()
   };
 
   return Joi.validate(user, schema);
