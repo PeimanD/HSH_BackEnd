@@ -9,7 +9,7 @@ const router = express.Router();
 router.post("/day", async (req, res) => {
   // console.log("request get: ", req.body);
   let dayLog = new DayLog(
-    _.pick(req.body, ["year", "month", "day", "thermostatId"])
+    _.pick(req.body, ["year", "month", "day", "thermostatId", "masterDevId"])
   );
   // console.log(dayLog);
   try {
@@ -51,6 +51,27 @@ router.put("/day", async (req, res) => {
     }
     res.sendStatus(200);
   });
+});
+
+/**
+ * Dev only, populate data for day log
+ */
+router.post("/dev/days", async (req, res) => {
+  console.log("request datatype: ", req.headers["content-type"]);
+  console.log("request get: ", req.body.data.logs[0]);
+  // let dayLog = new DayLog(
+  //   _.pick(req.body, ["year", "month", "day", "thermostatId"])
+  // );
+  // // console.log(dayLog);
+  // try {
+  //   await dayLog.save();
+  //   res.sendStatus(200);
+  // } catch (e) {
+  //   console.error(e);
+  //   res.status(400).send(e);
+  // }
+
+  res.sendStatus(200);
 });
 
 module.exports = router;
