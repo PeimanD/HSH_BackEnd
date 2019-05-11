@@ -37,6 +37,11 @@ const thermostatSchema = new Schema({
     required: true,
     default: 20.0
   },
+  currentTemp: {
+    type: Number,
+    required: true,
+    default: 0.0
+  },
   weekSchedule: {
     mon: { type: [Number], default: defaultSchedTemps, required: true },
     tue: { type: [Number], default: defaultSchedTemps, required: true },
