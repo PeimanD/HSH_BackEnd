@@ -11,30 +11,40 @@ const DayLog = model(
       type: Number,
       min: 1000,
       max: 9999,
-      default: false
+      default: false,
+      required: true
     },
     month: {
       type: Number,
       min: 1,
       max: 12,
-      default: false
+      default: false,
+      required: true
     },
     day: {
       type: Number,
-      minlength: 1,
-      maxlength: 31,
-      default: false
+      min: 1,
+      max: 31,
+      default: false,
+      required: true
+    },
+    masterDevId: {
+      type: String,
+      required: true,
+      minlength: 5,
+      maxlength: 50,
+      ref: "Thermostat"
     },
     thermostatId: {
       type: String,
+      required: true,
+      minlength: 5,
+      maxlength: 50,
       ref: "Thermostat"
     },
-    dayTemps: { type: [Number], default: default144Size, required: true },
-    dayAmbientTemps: {
-      type: [Number],
-      default: default144Size,
-      required: true
-    },
+    cTemps: { type: [Number], default: default144Size, required: true },
+    oTemps: { type: [Number], default: default144Size, required: true },
+    sTemps: { type: [Number], default: default144Size, required: true },
     isOn: { type: [Boolean], default: default144SizeBool, required: true },
     minsOn: { type: [Number], default: default144Size, required: true },
     minsSaved: { type: [Number], default: default144Size, required: true }
@@ -46,9 +56,9 @@ function validateLog(log) {
     year: Joi.number().required(),
     month: Joi.number().required(),
     day: Joi.number().required(),
-    thermostatId: Joi.string().required()
+    thermostatId: Joi.string().required(),
+    masterDevId: Joi.string().required()
   };
-
   return Joi.validate(log, schema);
 }
 

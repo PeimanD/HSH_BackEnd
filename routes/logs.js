@@ -36,7 +36,7 @@ router.get("/day", [auth], async (req, res) => {
 router.post("/day", async (req, res) => {
   // console.log("request get: ", req.body);
   let dayLog = new DayLog(
-    _.pick(req.body, ["year", "month", "day", "thermostatId"])
+    _.pick(req.body, ["year", "month", "day", "thermostatId", "masterDevId"])
   );
   // console.log(dayLog);
   try {
@@ -77,6 +77,66 @@ router.put("/day", async (req, res) => {
       res.status(err).send("hmm");
     }
     res.sendStatus(200);
+  });
+});
+
+/**
+ * Get weekly data
+ */
+router.get("/week", async (req, res) => {
+  let { year, month, day, thermostat_id, master_id } = req.query;
+  let curr = new Date(year, month - 1, day);
+  console.log("montH: ", month);
+  let query = {
+    $or: []
+  };
+  // Over
+  for (let i = 0; i < 7; i++) {
+    query.$or.push({
+      month: curr.getMonth() + 1,
+      year: curr.getFullYear(),
+      day: curr.getDate()
+    });
+    curr.setDate(curr.getDate() + 1);
+  }
+  try {
+    let results = await DayLog.find(query);
+    console.log(results);
+    res.send(results);
+  } catch (e) {
+    res.status(400).send(e);
+  }
+});
+
+/**
+ * Get monthly data
+ */
+router.get("/month", async (req, res) => {});
+
+/**
+ * Get yearly data
+ */
+router.get("/year", async (req, res) => {});
+
+/**
+ * Dev only, populate data for day log
+ */
+router.post("/dev/days", async (req, res) => {
+  // console.log("request datatype: ", req.headers["content-type"]);
+  let { logs } = req.body.data;
+  // logs.forEach(e => {
+  //   console.log(
+  //     `thermoId: ${e.thermostatId} masterDevId: ${e.masterDevId} month: ${
+  //       e.month
+  //     } day: ${e.day}`
+  //   );
+  // });
+  DayLog.collection.insert(logs, (err, docs) => {
+    if (err) {
+      res.status(400).send(e);
+    } else {
+      res.sendStatus(200);
+    }
   });
 });
 

@@ -15,37 +15,49 @@ const passport = require("passport");
  */
 router.post("/", async (req, res) => {
   const { error } = validateLogin(req);
-  if (error) return res.status(400).send(error.details[0].message);
-
+  if (error) {
+    res.status(400).send(error.details[0].message);
+  }
   /**
    * Either let front-end populate either email or _id field, or figure it out here.
    * Right now we'll default to the generated _id from mongoDB
    */
   // let user = await User.findOne({ email: req.body.email });
-  console.log("finding user");
-  let user = await User.findOne({ _id: req.body._id });
-  if (!user) return res.status(400).send("Invalid id/email or password.");
-  console.log("found user");
+  try {
+    console.log("finding user: ", req.body._id);
+    let user = await User.findOne({ _id: req.body._id });
+    if (!user) return res.status(400).send("Invalid id/email or password.");
+    console.log("found user");
 
-  const validPassword = await bcrypt.compare(req.body.password, user.password);
-  if (!validPassword) return res.status(400).send("Invalid password.");
+    const validPassword = await bcrypt.compare(
+      req.body.password,
+      user.password
+    );
+    if (!validPassword) return res.status(400).send("Invalid password.");
 
-  console.log("password ok");
+    console.log("password ok");
 
-  // Finally generate token for use
-  const payload = { _id: user._id, email: user.email, userName: user.userName };
-  jwt.sign(
-    payload,
-    config.get("jwtPrivateKey"),
-    { expiresIn: "1h" },
-    (err, token) => {
-      if (err) {
-        res.send(err);
-      } else {
-        res.status(200).send({ token });
+    // Finally generate token for use
+    const payload = {
+      _id: user._id,
+      email: user.email,
+      userName: user.userName
+    };
+    jwt.sign(
+      payload,
+      config.get("jwtPrivateKey"),
+      { expiresIn: "1h" },
+      (err, token) => {
+        if (err) {
+          res.send(err);
+        } else {
+          res.status(200).send({ token });
+        }
       }
-    }
-  );
+    );
+  } catch (e) {
+    res.status(400).send(e);
+  }
 });
 
 /**
