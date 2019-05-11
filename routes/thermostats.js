@@ -12,9 +12,34 @@ const _ = require("lodash");
 const router = express.Router();
 
 /**
- * Gets all thermostats for the user with provided JWT token
+ * Get a thermostat
  */
 router.get("/", [auth], async (req, res) => {
+  const masterDevId = req.query.master_id;
+  const thermostatId = req.query.thermostat_id;
+
+  if (!(masterDevId && thermostatId)) {
+    return res.status(404).send("Missing parameters.");
+  }
+
+  const thermostat = await Thermostat.findOne({
+    masterDevId: masterDevId,
+    thermostatId: thermostatId
+  });
+
+  if (!thermostat) {
+    return res
+      .status(404)
+      .send("The thermostat with the given IDs was not found.");
+  }
+
+  return res.status(200).send(thermostat);
+});
+
+/**
+ * Gets all thermostats for the user with provided JWT token
+ */
+router.get("/all", [auth], async (req, res) => {
   console.log("grabbing ", req.user._id, " thermostats...");
   const thermostats = await Thermostat.find({
     authedUsers: req.user._id
@@ -91,15 +116,15 @@ router.delete("/:id", [auth], async (req, res) => {
 });
 
 //get a thermostat
-router.get("/:id", [auth], async (req, res) => {
-  const thermostat = await thermostat.findById(req.params.id).select("-__v");
+// router.get("/:id", [auth], async (req, res) => {
+//   const thermostat = await thermostat.findById(req.params.id).select("-__v");
 
-  if (!thermostat)
-    return res
-      .status(404)
-      .send("The thermostat with the given ID was not found.");
+//   if (!thermostat)
+//     return res
+//       .status(404)
+//       .send("The thermostat with the given ID was not found.");
 
-  res.send(thermostat);
-});
+//   res.send(thermostat);
+// });
 
 module.exports = router;

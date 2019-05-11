@@ -7,17 +7,18 @@ const router = express.Router();
 
 // Get a daylog
 router.get("/day", [auth], async (req, res) => {
-  const masterId = req.query.master_id;
+  const masterDevId = req.query.master_id;
   const thermostatId = req.query.thermostat_id;
   const year = req.query.year;
   const month = req.query.month;
   const day = req.query.day;
 
-  if (!(masterId && thermostatId && year && month && day)) {
+  if (!(masterDevId && thermostatId && year && month && day)) {
     return res.status(404).send("Missing parameters.");
   }
 
   const dayLog = await DayLog.findOne({
+    masterDevId: masterDevId,
     thermostatId: thermostatId,
     year: year,
     month: month,
