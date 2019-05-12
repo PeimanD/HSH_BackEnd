@@ -88,7 +88,9 @@ router.get("/week", async (req, res) => {
   let curr = new Date(year, month - 1, day);
   console.log("montH: ", month);
   let query = {
-    $or: []
+    $or: [],
+    masterDevId: master_id,
+    thermostatId: thermostat_id
   };
   // Over
   for (let i = 0; i < 7; i++) {
@@ -111,12 +113,37 @@ router.get("/week", async (req, res) => {
 /**
  * Get monthly data
  */
-router.get("/month", async (req, res) => {});
+router.get("/month", async (req, res) => {
+  let { year, month, thermostat_id, master_id } = req.query;
+  try {
+    let results = await DayLog.find({
+      year,
+      month,
+      masterDevId: master_id,
+      thermostatId: thermostat_id
+    });
+    res.send(results);
+  } catch (e) {
+    res.status(400).send(e);
+  }
+});
 
 /**
  * Get yearly data
  */
-router.get("/year", async (req, res) => {});
+router.get("/year", async (req, res) => {
+  let { year, thermostat_id, master_id } = req.query;
+  try {
+    let results = await DayLog.find({
+      year,
+      thermostatId: thermostat_id,
+      masterDevId: master_id
+    });
+    res.send(results);
+  } catch (e) {
+    res.status(400).send(e);
+  }
+});
 
 /**
  * Dev only, populate data for day log
