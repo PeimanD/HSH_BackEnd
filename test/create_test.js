@@ -4,11 +4,8 @@ const expect = chai.expect;
 chai.config.truncateThreshold = 0;
 
 const { User } = require("../models/user");
-const {
-  Thermostat,
-  DayLog,
-  validateThermostat
-} = require("../models/thermostat");
+const { Thermostat, validateNewThermostat } = require("../models/thermostat");
+const { DayLog } = require("../models/log");
 
 describe("Creating documents", () => {
   it("creates a user", done => {
@@ -31,8 +28,9 @@ describe("Creating documents", () => {
       masterDevId: "23456",
       roomName: "Living room",
       status: true,
-      mode: 001,
+      mode: 1,
       setTemp: 22.3,
+      currentTemp: 21.3,
       weekSchedule: {
         mon: [22.1, 23.5],
         tue: [22.3],
@@ -44,13 +42,14 @@ describe("Creating documents", () => {
       },
       authedUsers: ["507f191e810c19729de860ea", "333f191e810c19729de860ea"]
     });
-    console.log(thermostat.authedUsers);
+    // console.log(thermostat);
 
     assert.strictEqual(thermostat.thermostatId, "12345");
     assert.strictEqual(thermostat.masterDevId, "23456");
     assert.strictEqual(thermostat.roomName, "living room");
     assert.strictEqual(thermostat.status, true);
     assert.strictEqual(thermostat.setTemp, 22.3);
+    assert.strictEqual(thermostat.currentTemp, 21.3);
 
     expect(thermostat.weekSchedule).to.deep.include({
       mon: [22.1, 23.5],
@@ -66,7 +65,9 @@ describe("Creating documents", () => {
       "507f191e810c19729de860ea",
       "333f191e810c19729de860ea"
     ]);
-    validateThermostat(thermostat);
+
+    let result = validateNewThermostat(thermostat.toObject());
+    assert.strictEqual(result.error, null);
 
     done();
   });
@@ -76,10 +77,12 @@ describe("Creating documents", () => {
       year: 2019,
       month: 5,
       day: 21,
+      masterId: "12345",
       thermostatId: "12345",
-      dayTemps: [21.2],
-      dayAmbientTemps: [19.2],
-      5: [true],
+      cTemps: [21.2],
+      oTemps: [22.2],
+      sTemps: [24.2],
+      isOn: [true],
       minsOn: [5.5, 0, 0, 0, 0, 0, 0, 0],
       minsSaved: [4.5]
     });

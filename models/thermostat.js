@@ -61,12 +61,24 @@ const validateNewThermostat = thermostat => {
   const schema = Joi.object().keys({
     thermostatId: Joi.string().required(),
     masterDevId: Joi.string().required(),
-    roomName: Joi.string(),
+    roomName: Joi.string().required(),
     status: Joi.boolean(),
     mode: Joi.number(),
-    setTemp: Joi.number()
-    // weekSchedule: Joi.object(Joi.array().items(Joi.number()))
+    setTemp: Joi.number().required(),
+    currentTemp: Joi.number().required(),
+    authedUsers: Joi.array().items(Joi.object()),
+    _id: Joi.object(),
+    weekSchedule: Joi.object().keys({
+      mon: Joi.array().items(Joi.number()),
+      tue: Joi.array().items(Joi.number()),
+      wed: Joi.array().items(Joi.number()),
+      thu: Joi.array().items(Joi.number()),
+      fri: Joi.array().items(Joi.number()),
+      sat: Joi.array().items(Joi.number()),
+      sun: Joi.array().items(Joi.number())
+    })
   });
+
   return Joi.validate(thermostat, schema);
 };
 
