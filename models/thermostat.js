@@ -59,6 +59,7 @@ const Thermostat = model("Thermostat", thermostatSchema);
 
 const validateNewThermostat = thermostat => {
   const schema = Joi.object().keys({
+    _id: Joi.object(),
     thermostatId: Joi.string().required(),
     masterDevId: Joi.string().required(),
     roomName: Joi.string().required(),
@@ -67,15 +68,35 @@ const validateNewThermostat = thermostat => {
     setTemp: Joi.number().required(),
     currentTemp: Joi.number().required(),
     authedUsers: Joi.array().items(Joi.object()),
-    _id: Joi.object(),
     weekSchedule: Joi.object().keys({
-      mon: Joi.array().items(Joi.number()),
-      tue: Joi.array().items(Joi.number()),
-      wed: Joi.array().items(Joi.number()),
-      thu: Joi.array().items(Joi.number()),
-      fri: Joi.array().items(Joi.number()),
-      sat: Joi.array().items(Joi.number()),
-      sun: Joi.array().items(Joi.number())
+      mon: Joi.array()
+        .items(Joi.number())
+        .length(24)
+        .required(),
+      tue: Joi.array()
+        .items(Joi.number())
+        .length(24)
+        .required(),
+      wed: Joi.array()
+        .items(Joi.number())
+        .length(24)
+        .required(),
+      thu: Joi.array()
+        .items(Joi.number())
+        .length(24)
+        .required(),
+      fri: Joi.array()
+        .items(Joi.number())
+        .length(24)
+        .required(),
+      sat: Joi.array()
+        .items(Joi.number())
+        .length(24)
+        .required(),
+      sun: Joi.array()
+        .items(Joi.number())
+        .length(24)
+        .required()
     })
   });
 
@@ -87,7 +108,7 @@ const validateSchedule = schedule => {
   const schema = Joi.object()
     .keys({
       mon: Joi.array()
-        .items(Joi.number().required())
+        .items(Joi.number())
         .length(24)
         .required(),
       tue: Joi.array()
