@@ -46,6 +46,7 @@ const User = model(
 
 function validateUser(user) {
   const schema = {
+    _id: Joi.object(),
     userName: Joi.string()
       .min(2)
       .max(50)
@@ -71,4 +72,4 @@ function validateUser(user) {
 }
 
 exports.User = User;
-exports.validate = validateUser;
+exports.validateUser = validateUser;

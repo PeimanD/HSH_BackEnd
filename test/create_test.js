@@ -3,7 +3,7 @@ const assert = chai.assert;
 const expect = chai.expect;
 chai.config.truncateThreshold = 0;
 
-const { User } = require("../models/user");
+const { User, validateUser } = require("../models/user");
 const { Thermostat, validateNewThermostat } = require("../models/thermostat");
 const { DayLog } = require("../models/log");
 
@@ -18,6 +18,9 @@ describe("Creating documents", () => {
     assert.strictEqual(user.email, "aaa@g.com");
     assert.strictEqual(user.password, "abcde");
     console.log(user);
+
+    let result = validateUser(user.toObject());
+    assert.strictEqual(result.error, null);
 
     done();
   });
