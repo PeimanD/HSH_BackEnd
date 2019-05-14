@@ -31,15 +31,15 @@ describe("Creating documents", () => {
       mode: 1,
       setTemp: 22.3,
       currentTemp: 21.3,
-      weekSchedule: {
-        mon: [22.1, 23.5],
-        tue: [22.3],
-        wed: [25.3],
-        thu: [24.1],
-        fri: [22.7],
-        sat: [27.1],
-        sun: [22.1]
-      },
+      // weekSchedule: {
+      //   mon: [22.1, 23.5],
+      //   tue: [22.3],
+      //   wed: [25.3],
+      //   thu: [24.1],
+      //   fri: [22.7],
+      //   sat: [27.1],
+      //   sun: [22.1]
+      // },
       authedUsers: ["507f191e810c19729de860ea", "333f191e810c19729de860ea"]
     });
     // console.log(thermostat);
@@ -51,14 +51,16 @@ describe("Creating documents", () => {
     assert.strictEqual(thermostat.setTemp, 22.3);
     assert.strictEqual(thermostat.currentTemp, 21.3);
 
+    const testSchData = new Array(24).fill(20);
+
     expect(thermostat.weekSchedule).to.deep.include({
-      mon: [22.1, 23.5],
-      tue: [22.3],
-      wed: [25.3],
-      thu: [24.1],
-      fri: [22.7],
-      sat: [27.1],
-      sun: [22.1]
+      mon: testSchData,
+      tue: testSchData,
+      wed: testSchData,
+      thu: testSchData,
+      fri: testSchData,
+      sat: testSchData,
+      sun: testSchData
     });
 
     expect(thermostat.authedUsers).to.include.members([
