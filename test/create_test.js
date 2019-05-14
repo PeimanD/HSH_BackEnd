@@ -31,18 +31,8 @@ describe("Creating documents", () => {
       mode: 1,
       setTemp: 22.3,
       currentTemp: 21.3,
-      // weekSchedule: {
-      //   mon: [22.1, 23.5],
-      //   tue: [22.3],
-      //   wed: [25.3],
-      //   thu: [24.1],
-      //   fri: [22.7],
-      //   sat: [27.1],
-      //   sun: [22.1]
-      // },
       authedUsers: ["507f191e810c19729de860ea", "333f191e810c19729de860ea"]
     });
-    // console.log(thermostat);
 
     assert.strictEqual(thermostat.thermostatId, "12345");
     assert.strictEqual(thermostat.masterDevId, "23456");
