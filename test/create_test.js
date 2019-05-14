@@ -5,7 +5,7 @@ chai.config.truncateThreshold = 0;
 
 const { User, validateUser } = require("../models/user");
 const { Thermostat, validateNewThermostat } = require("../models/thermostat");
-const { DayLog } = require("../models/log");
+const { DayLog, validateDayLog } = require("../models/log");
 
 describe("Creating documents", () => {
   it("creates a user", done => {
@@ -17,7 +17,6 @@ describe("Creating documents", () => {
     assert.strictEqual(user.userName, "john");
     assert.strictEqual(user.email, "aaa@g.com");
     assert.strictEqual(user.password, "abcde");
-    console.log(user);
 
     let result = validateUser(user.toObject());
     assert.strictEqual(result.error, null);
@@ -61,26 +60,39 @@ describe("Creating documents", () => {
       "333f191e810c19729de860ea"
     ]);
 
-    let result = validateNewThermostat(thermostat.toObject());
+    const result = validateNewThermostat(thermostat.toObject());
     assert.strictEqual(result.error, null);
 
     done();
   });
 
   it("creates a daylog", done => {
+    const testTempData = new Array(144).fill(0);
+    const testBoolData = new Array(144).fill(false);
+
     const daylog = new DayLog({
       year: 2019,
       month: 5,
       day: 21,
-      masterId: "12345",
-      thermostatId: "12345",
-      cTemps: [21.2],
-      oTemps: [22.2],
-      sTemps: [24.2],
-      isOn: [true],
-      minsOn: [5.5, 0, 0, 0, 0, 0, 0, 0],
-      minsSaved: [4.5]
+      masterDevId: "23456",
+      thermostatId: "12345"
     });
+
+    assert.strictEqual(daylog.year, 2019);
+    assert.strictEqual(daylog.month, 5);
+    assert.strictEqual(daylog.day, 21);
+    assert.strictEqual(daylog.thermostatId, "12345");
+    assert.strictEqual(daylog.masterDevId, "23456");
+
+    expect(daylog.cTemps).to.deep.include.members(testTempData);
+    expect(daylog.oTemps).to.deep.include.members(testTempData);
+    expect(daylog.sTemps).to.deep.include.members(testTempData);
+    expect(daylog.isOn).to.deep.include.members(testBoolData);
+    expect(daylog.minsOn).to.deep.include.members(testTempData);
+    expect(daylog.minsSaved).to.deep.include.members(testTempData);
+
+    const result = validateDayLog(daylog.toObject());
+    assert.strictEqual(result.error, null);
 
     done();
   });
