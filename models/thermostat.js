@@ -30,7 +30,8 @@ const thermostatSchema = new Schema({
   mode: {
     type: Number,
     minlength: 1,
-    maxlength: 3
+    maxlength: 3,
+    default: 0
   },
   setTemp: {
     type: Number,
