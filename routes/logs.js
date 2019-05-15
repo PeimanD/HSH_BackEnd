@@ -123,7 +123,8 @@ router.get("/month", async (req, res) => {
       masterDevId: master_id,
       thermostatId: thermostat_id
     });
-    res.send(results);
+    (results === undefined || results.length === 0) ? 
+      res.status(404).send("Record not found") : res.send(results);
   } catch (e) {
     res.status(404).send(e);
   }
@@ -140,7 +141,8 @@ router.get("/year", async (req, res) => {
       thermostatId: thermostat_id,
       masterDevId: master_id
     });
-    res.send(results);
+    (results === undefined || results.length === 0) ?
+      res.status(404).send("Record not found") : res.send(results);
   } catch (e) {
     res.status(400).send(e);
   }
