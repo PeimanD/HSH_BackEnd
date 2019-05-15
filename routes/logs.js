@@ -104,8 +104,8 @@ router.get("/week", async (req, res) => {
   try {
     let results = await DayLog.find(query);
     console.log(results);
-    (results === undefined || results.length == 0) ? 
-      res.send(results) : res.status(404).send("Record not found");
+    (results === undefined || results.length === 0) ? 
+      res.status(404).send("Record not found") : res.send(results);
   } catch (e) {
     res.status(404).send(e);
   }
