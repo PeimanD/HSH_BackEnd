@@ -1,6 +1,8 @@
 const {
   Thermostat,
   validateSchedule,
+  validateMode,
+  validateStatus,
   validateThermostat
 } = require("../models/thermostat");
 const auth = require("../middleware/auth");
@@ -78,16 +80,27 @@ router.post("/new", [auth], async (req, res) => {
   }
  */
 router.put("/schedule", [auth], async (req, res) => {
-  const { error } = validateSchedule(req.body.weekSchedule);
+  const error =
+    validateSchedule(req.body.weekSchedule).error ||
+    validateMode(_.pick(req.body, ["thermostatId", "masterDevId", "mode"]))
+      .error ||
+    validateStatus(_.pick(req.body, ["thermostatId", "masterDevId", "status"]))
+      .error;
+
+  console.log("schedule update error: ", error);
+
   if (error) {
     res.status(400).send(error.details[0].message);
+    return;
   }
-  let { thermostatId, masterDevId, weekSchedule } = req.body;
+  let { thermostatId, masterDevId, weekSchedule, mode, status } = req.body;
   // Build query params
   let query = { thermostatId, masterDevId };
   let update = {
     $set: {
-      weekSchedule
+      weekSchedule,
+      mode,
+      status
     }
   };
   let options = { new: true }; // Returns the updated document instead
@@ -101,6 +114,28 @@ router.put("/schedule", [auth], async (req, res) => {
   } catch (e) {
     res.status(400).send(e);
   }
+});
+
+/**
+ * Update status of a specific thermostat
+ */
+router.put("/status", [auth], async (req, res) => {
+  const { error } = validateStatus(req.body.weekSchedule);
+  if (error) {
+    res.status(400).send(error.details[0].message);
+  }
+  let { thermostatId, masterDevId, status } = req.body;
+});
+
+/**
+ * Update mode of a specific thermostat
+ */
+router.put("/mode", [auth], async (req, res) => {
+  const { error } = validateMode(req.body.weekSchedule);
+  if (error) {
+    res.status(400).send(error.details[0].message);
+  }
+  let { thermostatId, masterDevId, mode } = req.body;
 });
 
 //delete a thermostat
