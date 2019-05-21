@@ -1,6 +1,9 @@
 const Joi = require("joi");
 const { model, Schema } = require("mongoose");
 
+/**
+ * User model and schema
+ */
 const User = model(
   "User",
   new Schema({
@@ -44,8 +47,16 @@ const User = model(
   })
 );
 
+/**
+ * validate User format
+ *
+ * @param user User object
+ *
+ * @return the validation result
+ */
 function validateUser(user) {
   const schema = {
+    _id: Joi.object(),
     userName: Joi.string()
       .min(2)
       .max(50)
@@ -71,4 +82,4 @@ function validateUser(user) {
 }
 
 exports.User = User;
-exports.validate = validateUser;
+exports.validateUser = validateUser;

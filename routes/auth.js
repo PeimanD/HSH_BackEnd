@@ -12,17 +12,21 @@ const passport = require("passport");
 
 /**
  * Logs the user in, returns the jwt with 1h expiry, as an onject in the http response
+ *
+ * @param _id the user ID
+ * @param password the password of the user
+ *
+ * @return the token associated with the user or error
  */
 router.post("/", async (req, res) => {
   const { error } = validateLogin(req);
   if (error) {
     res.status(400).send(error.details[0].message);
   }
-  /**
-   * Either let front-end populate either email or _id field, or figure it out here.
-   * Right now we'll default to the generated _id from mongoDB
-   */
-  // let user = await User.findOne({ email: req.body.email });
+
+  // Either let front-end populate either email or _id field, or figure it out here.
+  // Right now we'll default to the generated _id from mongoDB
+
   try {
     console.log("finding user: ", req.body._id);
     let user = await User.findOne({ _id: req.body._id });
@@ -62,7 +66,11 @@ router.post("/", async (req, res) => {
 
 /**
  * Uses mongoDB _id and unhashed password to login
- * @param {the actual http request} req
+ *
+ * @param _id the user ID
+ * @param password the password of the user
+ *
+ * @return the validation result object
  */
 function validateLogin(req) {
   const filteredReq = _.pick(req.body, ["_id", "password"]);

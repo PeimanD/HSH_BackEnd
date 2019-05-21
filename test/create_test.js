@@ -3,12 +3,9 @@ const assert = chai.assert;
 const expect = chai.expect;
 chai.config.truncateThreshold = 0;
 
-const { User } = require("../models/user");
-const {
-  Thermostat,
-  DayLog,
-  validateThermostat
-} = require("../models/thermostat");
+const { User, validateUser } = require("../models/user");
+const { Thermostat, validateNewThermostat } = require("../models/thermostat");
+const { DayLog, validateDayLog } = require("../models/log");
 
 describe("Creating documents", () => {
   it("creates a user", done => {
@@ -20,7 +17,9 @@ describe("Creating documents", () => {
     assert.strictEqual(user.userName, "john");
     assert.strictEqual(user.email, "aaa@g.com");
     assert.strictEqual(user.password, "abcde");
-    console.log(user);
+
+    let result = validateUser(user.toObject());
+    assert.strictEqual(result.error, null);
 
     done();
   });
@@ -31,58 +30,69 @@ describe("Creating documents", () => {
       masterDevId: "23456",
       roomName: "Living room",
       status: true,
-      mode: 001,
+      mode: 1,
       setTemp: 22.3,
-      weekSchedule: {
-        mon: [22.1, 23.5],
-        tue: [22.3],
-        wed: [25.3],
-        thu: [24.1],
-        fri: [22.7],
-        sat: [27.1],
-        sun: [22.1]
-      },
+      currentTemp: 21.3,
       authedUsers: ["507f191e810c19729de860ea", "333f191e810c19729de860ea"]
     });
-    console.log(thermostat.authedUsers);
 
     assert.strictEqual(thermostat.thermostatId, "12345");
     assert.strictEqual(thermostat.masterDevId, "23456");
     assert.strictEqual(thermostat.roomName, "living room");
     assert.strictEqual(thermostat.status, true);
     assert.strictEqual(thermostat.setTemp, 22.3);
+    assert.strictEqual(thermostat.currentTemp, 21.3);
+
+    const testSchData = new Array(24).fill(20);
 
     expect(thermostat.weekSchedule).to.deep.include({
-      mon: [22.1, 23.5],
-      tue: [22.3],
-      wed: [25.3],
-      thu: [24.1],
-      fri: [22.7],
-      sat: [27.1],
-      sun: [22.1]
+      mon: testSchData,
+      tue: testSchData,
+      wed: testSchData,
+      thu: testSchData,
+      fri: testSchData,
+      sat: testSchData,
+      sun: testSchData
     });
 
     expect(thermostat.authedUsers).to.include.members([
       "507f191e810c19729de860ea",
       "333f191e810c19729de860ea"
     ]);
-    validateThermostat(thermostat);
+
+    const result = validateNewThermostat(thermostat.toObject());
+    assert.strictEqual(result.error, null);
 
     done();
   });
 
   it("creates a daylog", done => {
+    const testTempData = new Array(144).fill(0);
+    const testBoolData = new Array(144).fill(false);
+
     const daylog = new DayLog({
       year: 2019,
       month: 5,
       day: 21,
-      thermostatId: "12345",
-      dayTemps: [21.2],
-      dayAmbientTemps: [19.2],
-      5: [true],
-      minsOn: [5.5, 0, 0, 0, 0, 0, 0, 0],
-      minsSaved: [4.5]
+      masterDevId: "23456",
+      thermostatId: "12345"
     });
+
+    assert.strictEqual(daylog.year, 2019);
+    assert.strictEqual(daylog.month, 5);
+    assert.strictEqual(daylog.day, 21);
+    assert.strictEqual(daylog.thermostatId, "12345");
+    assert.strictEqual(daylog.masterDevId, "23456");
+
+    expect(daylog.cTemps).to.deep.include.members(testTempData);
+    expect(daylog.oTemps).to.deep.include.members(testTempData);
+    expect(daylog.sTemps).to.deep.include.members(testTempData);
+    expect(daylog.isOn).to.deep.include.members(testBoolData);
+    expect(daylog.minsOn).to.deep.include.members(testTempData);
+    expect(daylog.minsSaved).to.deep.include.members(testTempData);
+
+    const result = validateDayLog(daylog.toObject());
+    assert.strictEqual(result.error, null);
 
     done();
   });

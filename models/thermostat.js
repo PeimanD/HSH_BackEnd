@@ -3,6 +3,9 @@ const { model, Schema } = require("mongoose");
 
 const defaultSchedTemps = new Array(24).fill(20);
 
+/**
+ * the thermostat schema
+ */
 const thermostatSchema = new Schema({
   thermostatId: {
     type: String,
@@ -58,25 +61,71 @@ thermostatSchema.index({ thermostatId: 1, masterDevId: 1 }, { unique: true });
 
 const Thermostat = model("Thermostat", thermostatSchema);
 
+/**
+ * validate Thermostat format
+ *
+ * @param thermostat Thermostat object
+ *
+ * @return the validation result
+ */
 const validateNewThermostat = thermostat => {
   const schema = Joi.object().keys({
+    _id: Joi.object(),
     thermostatId: Joi.string().required(),
     masterDevId: Joi.string().required(),
-    roomName: Joi.string(),
+    roomName: Joi.string().required(),
     status: Joi.boolean(),
     mode: Joi.number(),
-    setTemp: Joi.number()
-    // weekSchedule: Joi.object(Joi.array().items(Joi.number()))
+    setTemp: Joi.number().required(),
+    currentTemp: Joi.number().required(),
+    authedUsers: Joi.array().items(Joi.object()),
+    weekSchedule: Joi.object().keys({
+      mon: Joi.array()
+        .items(Joi.number())
+        .length(24)
+        .required(),
+      tue: Joi.array()
+        .items(Joi.number())
+        .length(24)
+        .required(),
+      wed: Joi.array()
+        .items(Joi.number())
+        .length(24)
+        .required(),
+      thu: Joi.array()
+        .items(Joi.number())
+        .length(24)
+        .required(),
+      fri: Joi.array()
+        .items(Joi.number())
+        .length(24)
+        .required(),
+      sat: Joi.array()
+        .items(Joi.number())
+        .length(24)
+        .required(),
+      sun: Joi.array()
+        .items(Joi.number())
+        .length(24)
+        .required()
+    })
   });
+
   return Joi.validate(thermostat, schema);
 };
 
+/**
+ * validate Schedule format
+ *
+ * @param schedule Schedule object
+ *
+ * @return the validation result
+ */
 const validateSchedule = schedule => {
-  // console.log("sched ", schedule);
   const schema = Joi.object()
     .keys({
       mon: Joi.array()
-        .items(Joi.number().required())
+        .items(Joi.number())
         .length(24)
         .required(),
       tue: Joi.array()
@@ -108,6 +157,13 @@ const validateSchedule = schedule => {
   return Joi.validate(schedule, schema);
 };
 
+/**
+ * validate Mode format
+ *
+ * @param thermostat Thermostat object
+ *
+ * @return the validation result
+ */
 const validateMode = thermostat => {
   const schema = Joi.object().keys({
     thermostatId: Joi.string().required(),
@@ -115,10 +171,16 @@ const validateMode = thermostat => {
     mode: Joi.number().required()
   });
   console.log("validate mode: ", Joi.validate(thermostat, schema).error);
-  // console.log(thermostat);
   return Joi.validate(thermostat, schema);
 };
 
+/**
+ * validate Status format
+ *
+ * @param thermostat Thermostat object
+ *
+ * @return the validation result
+ */
 const validateStatus = thermostat => {
   const schema = Joi.object().keys({
     thermostatId: Joi.string().required(),
@@ -126,7 +188,6 @@ const validateStatus = thermostat => {
     status: Joi.boolean().required()
   });
   console.log("validate status: ", Joi.validate(thermostat, schema).error);
-  // console.log(thermostat);
   return Joi.validate(thermostat, schema);
 };
 

@@ -2,8 +2,11 @@ const Joi = require("joi");
 const { model, Schema } = require("mongoose");
 
 const default144Size = new Array(144).fill(0);
-const default144SizeBool = new Array(144).fill(null);
+const default144SizeBool = new Array(144).fill(false);
 
+/**
+ * DayLog model and schema
+ */
 const DayLog = model(
   "DayLog",
   new Schema({
@@ -51,16 +54,63 @@ const DayLog = model(
   })
 );
 
-function validateLog(log) {
+/**
+ * validate DayLog format
+ *
+ * @param log DayLog object
+ *
+ * @return the validation result
+ */
+function validateDayLog(log) {
   const schema = {
-    year: Joi.number().required(),
-    month: Joi.number().required(),
-    day: Joi.number().required(),
-    thermostatId: Joi.string().required(),
-    masterDevId: Joi.string().required()
+    _id: Joi.object(),
+    year: Joi.number()
+      .min(1000)
+      .max(9999)
+      .required(),
+    month: Joi.number()
+      .min(1)
+      .max(12)
+      .required(),
+    day: Joi.number()
+      .min(1)
+      .max(31)
+      .required(),
+    thermostatId: Joi.string()
+      .min(5)
+      .max(50)
+      .required(),
+    masterDevId: Joi.string()
+      .min(5)
+      .max(50)
+      .required(),
+    cTemps: Joi.array()
+      .items(Joi.number())
+      .length(144)
+      .required(),
+    oTemps: Joi.array()
+      .items(Joi.number())
+      .length(144)
+      .required(),
+    sTemps: Joi.array()
+      .items(Joi.number())
+      .length(144)
+      .required(),
+    isOn: Joi.array()
+      .items(Joi.boolean())
+      .length(144)
+      .required(),
+    minsOn: Joi.array()
+      .items(Joi.number())
+      .length(144)
+      .required(),
+    minsSaved: Joi.array()
+      .items(Joi.number())
+      .length(144)
+      .required()
   };
   return Joi.validate(log, schema);
 }
 
 exports.DayLog = DayLog;
-exports.validate = validateLog;
+exports.validateDayLog = validateDayLog;

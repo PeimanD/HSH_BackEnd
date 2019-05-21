@@ -6,7 +6,6 @@ const {
   validateThermostat
 } = require("../models/thermostat");
 const auth = require("../middleware/auth");
-//const validateObjectId = require("../middleware/validateObjectId");
 const moment = require("moment");
 const mongoose = require("mongoose");
 const express = require("express");
@@ -14,7 +13,12 @@ const _ = require("lodash");
 const router = express.Router();
 
 /**
- * Get a thermostat
+ * Get a thermostat. Authentication is required.
+ *
+ * @param master_id master Pi device ID
+ * @param thermostat_id thermostat ID
+ *
+ * @return a thermostat information or error
  */
 router.get("/", [auth], async (req, res) => {
   const masterDevId = req.query.master_id;
@@ -39,7 +43,10 @@ router.get("/", [auth], async (req, res) => {
 });
 
 /**
- * Gets all thermostats for the user with provided JWT token
+ * Gets all thermostats for the user with provided JWT token.
+ * Authentication is required.
+ *
+ * @return all thermostat information associated with the user
  */
 router.get("/all", [auth], async (req, res) => {
   console.log("grabbing ", req.user._id, " thermostats...");
@@ -51,7 +58,9 @@ router.get("/all", [auth], async (req, res) => {
 });
 
 /**
- * Create a new thermostat
+ * Create a new thermostat. Authentication is required.
+ *
+ * @return the created thermostat information or error
  */
 router.post("/new", [auth], async (req, res) => {
   const { error } = validateThermostat(req.body);
@@ -64,8 +73,17 @@ router.post("/new", [auth], async (req, res) => {
 });
 
 /**
- * Update thermostat schedule
-  req.body : {
+ * Update thermostat schedule. Authentication is required.
+ * 
+ * @param weekSchedule an object of arrays of schedules
+ * @param thermostatId thermostat ID
+ * @param masterDevId master Pi device ID
+ * 
+ * @return the updated thermostat information or error
+ * 
+ * Request data format example:
+ * 
+ * req.body : {
     "weekSchedule" : {
       "mon" : [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
       "tue" : [2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2],
@@ -117,7 +135,8 @@ router.put("/schedule", [auth], async (req, res) => {
 });
 
 /**
- * Update status of a specific thermostat
+ * Place holder. May need in the future.
+ * Update status of a specific thermostat.
  */
 router.put("/status", [auth], async (req, res) => {
   const { error } = validateStatus(req.body.weekSchedule);
@@ -128,6 +147,7 @@ router.put("/status", [auth], async (req, res) => {
 });
 
 /**
+ * Place holder. May need in the future.
  * Update mode of a specific thermostat
  */
 router.put("/mode", [auth], async (req, res) => {
@@ -138,7 +158,10 @@ router.put("/mode", [auth], async (req, res) => {
   let { thermostatId, masterDevId, mode } = req.body;
 });
 
-//delete a thermostat
+/**
+ * Place holder. May need in the future.
+ * Delete a thermostat.
+ */
 router.delete("/:id", [auth], async (req, res) => {
   const thermostat = await thermostat.findByIdAndRemove(req.params.id);
 
@@ -149,17 +172,5 @@ router.delete("/:id", [auth], async (req, res) => {
 
   res.send(thermostat);
 });
-
-//get a thermostat
-// router.get("/:id", [auth], async (req, res) => {
-//   const thermostat = await thermostat.findById(req.params.id).select("-__v");
-
-//   if (!thermostat)
-//     return res
-//       .status(404)
-//       .send("The thermostat with the given ID was not found.");
-
-//   res.send(thermostat);
-// });
 
 module.exports = router;
