@@ -4,6 +4,9 @@ const { model, Schema } = require("mongoose");
 const default144Size = new Array(144).fill(0);
 const default144SizeBool = new Array(144).fill(false);
 
+/**
+ * DayLog model and schema
+ */
 const DayLog = model(
   "DayLog",
   new Schema({
@@ -51,6 +54,13 @@ const DayLog = model(
   })
 );
 
+/**
+ * validate DayLog format
+ *
+ * @param log DayLog object
+ *
+ * @return the validation result
+ */
 function validateDayLog(log) {
   const schema = {
     _id: Joi.object(),

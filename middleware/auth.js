@@ -1,6 +1,13 @@
 const jwt = require("jsonwebtoken");
 const config = require("config");
 
+/**
+ * User authorization middleware.
+ *
+ * @param x-auth-token the token of the user
+ *
+ * @return error on authorization failure
+ */
 module.exports = function(req, res, next) {
   if (!config.get("requiresAuth")) return next();
   console.log("auth req'd");

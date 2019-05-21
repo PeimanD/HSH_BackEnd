@@ -5,7 +5,17 @@ const express = require("express");
 const _ = require("lodash");
 const router = express.Router();
 
-// Get a daylog
+/**
+ * Get a daylog. Authentication is requried.
+ *
+ * @param master_id master Pi device ID
+ * @param thermostat_id thermostat ID
+ * @param year the year of the daylog
+ * @param month the month of the daylog
+ * @param day the day of the daylog
+ *
+ * @return the daylog or error
+ */
 router.get("/day", [auth], async (req, res) => {
   const masterDevId = req.query.master_id;
   const thermostatId = req.query.thermostat_id;
@@ -32,13 +42,20 @@ router.get("/day", [auth], async (req, res) => {
   return res.status(200).send(dayLog);
 });
 
-// Add a daylog
+/**
+ * Add a daylog.
+ *
+ * @param master_id master Pi device ID
+ * @param thermostat_id thermostat ID
+ * @param year the year of the daylog
+ * @param month the month of the daylog
+ * @param day the day of the daylog
+ */
 router.post("/day", async (req, res) => {
-  // console.log("request get: ", req.body);
   let dayLog = new DayLog(
     _.pick(req.body, ["year", "month", "day", "thermostatId", "masterDevId"])
   );
-  // console.log(dayLog);
+
   try {
     await dayLog.save();
     res.sendStatus(200);
@@ -48,7 +65,20 @@ router.post("/day", async (req, res) => {
   }
 });
 
-// Update a daylog
+/**
+ * Update a daylog.
+ *
+ * @param thermostat_id thermostat ID
+ * @param day the day of the daylog to update
+ * @param month the month of the daylog to update
+ * @param year the year of the daylog to update
+ * @param index the time slot index of the daylog to update
+ * @param temp the value of the set temperature
+ * @param ambientTemp the value of the ambient temperature
+ * @param isOn the On/Off status
+ * @param minsOn the duration of the on status in the time slot
+ * @param minsSaved the value of the saved energy
+ */
 router.put("/day", async (req, res) => {
   let {
     thermostatId,
@@ -66,6 +96,7 @@ router.put("/day", async (req, res) => {
   let update = {
     $set: {}
   };
+
   update.$set[`dayTemps.${index}`] = temp;
   update.$set[`dayAmbientTemps.${index}`] = ambientTemp;
   update.$set[`isOn.${index}`] = isOn;
@@ -81,7 +112,15 @@ router.put("/day", async (req, res) => {
 });
 
 /**
- * Get weekly data
+ * Get weekly data.
+ *
+ * @param master_id master Pi device ID
+ * @param thermostat_id thermostat ID
+ * @param year the year of the daylog
+ * @param month the month of the daylog
+ * @param day the day of the daylog
+ *
+ * @return the weekly log or error
  */
 router.get("/week", async (req, res) => {
   let { year, month, day, thermostat_id, master_id } = req.query;
@@ -104,18 +143,25 @@ router.get("/week", async (req, res) => {
   try {
     let results = await DayLog.find(query);
     console.log(results);
-    (results === undefined || results.length === 0) ? 
-      res.status(404).send("Record not found") : res.send(results);
+    results === undefined || results.length === 0
+      ? res.status(404).send("Record not found")
+      : res.send(results);
   } catch (e) {
     res.status(404).send(e);
   }
 });
 
 /**
- * Get monthly data
+ * Get monthly data.
+ *
+ * @param master_id master Pi device ID
+ * @param thermostat_id thermostat ID
+ * @param year the year of the daylog
+ * @param month the month of the daylog
  */
 router.get("/month", async (req, res) => {
   let { year, month, thermostat_id, master_id } = req.query;
+
   try {
     let results = await DayLog.find({
       year,
@@ -123,15 +169,20 @@ router.get("/month", async (req, res) => {
       masterDevId: master_id,
       thermostatId: thermostat_id
     });
-    (results === undefined || results.length === 0) ? 
-      res.status(404).send("Record not found") : res.send(results);
+    results === undefined || results.length === 0
+      ? res.status(404).send("Record not found")
+      : res.send(results);
   } catch (e) {
     res.status(404).send(e);
   }
 });
 
 /**
- * Get yearly data
+ * Get yearly data.
+ *
+ * @param master_id master Pi device ID
+ * @param thermostat_id thermostat ID
+ * @param year the year of the daylog
  */
 router.get("/year", async (req, res) => {
   let { year, thermostat_id, master_id } = req.query;
@@ -141,8 +192,9 @@ router.get("/year", async (req, res) => {
       thermostatId: thermostat_id,
       masterDevId: master_id
     });
-    (results === undefined || results.length === 0) ?
-      res.status(404).send("Record not found") : res.send(results);
+    results === undefined || results.length === 0
+      ? res.status(404).send("Record not found")
+      : res.send(results);
   } catch (e) {
     res.status(400).send(e);
   }
