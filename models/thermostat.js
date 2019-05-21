@@ -30,7 +30,8 @@ const thermostatSchema = new Schema({
   mode: {
     type: Number,
     minlength: 1,
-    maxlength: 3
+    maxlength: 3,
+    default: 0
   },
   setTemp: {
     type: Number,
@@ -107,6 +108,30 @@ const validateSchedule = schedule => {
   return Joi.validate(schedule, schema);
 };
 
+const validateMode = thermostat => {
+  const schema = Joi.object().keys({
+    thermostatId: Joi.string().required(),
+    masterDevId: Joi.string().required(),
+    mode: Joi.number().required()
+  });
+  console.log("validate mode: ", Joi.validate(thermostat, schema).error);
+  // console.log(thermostat);
+  return Joi.validate(thermostat, schema);
+};
+
+const validateStatus = thermostat => {
+  const schema = Joi.object().keys({
+    thermostatId: Joi.string().required(),
+    masterDevId: Joi.string().required(),
+    status: Joi.boolean().required()
+  });
+  console.log("validate status: ", Joi.validate(thermostat, schema).error);
+  // console.log(thermostat);
+  return Joi.validate(thermostat, schema);
+};
+
 exports.Thermostat = Thermostat;
 exports.validateNewThermostat = validateNewThermostat;
 exports.validateSchedule = validateSchedule;
+exports.validateStatus = validateStatus;
+exports.validateMode = validateMode;
