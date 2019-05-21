@@ -19,7 +19,9 @@ router.get("/me", auth, async (req, res) => {
 /**
  * Register new user.
  *
+ * @param userName the user name of the new user
  * @param email the email address of the new user
+ * @param password the password of the new user
  *
  * @return access token or error
  */
